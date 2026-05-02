@@ -1,47 +1,50 @@
-export default function StudentTable({ students, fetchStudents, setEditStudent }) {
+import toast from "react-hot-toast";
+
+export default function StudentTable({ students, onEdit, fetchStudents }) {
 
     const handleDelete = async (id) => {
         await fetch(`http://localhost:5000/api/students/${id}`, {
             method: "DELETE"
         });
-
+        toast.success("Student deleted");
         fetchStudents();
     };
 
     return (
-        <table className="mt-5 border w-full">
-            <thead>
+        <table className="w-full bg-white rounded-xl overflow-hidden shadow-md">
+            <thead className="bg-gray-100 text-black">
                 <tr>
-                    <th>Name</th>
-                    <th>Address</th>
-                    <th>DOB</th>
-                    <th>Phone</th>
-                    <th>Fees</th>
-                    <th>Action</th>
+                    <th className="p-4 text-left">Name</th>
+                    <th className="p-4 text-left">Address</th>
+                    <th className="p-4 text-left">DOB</th>
+                    <th className="p-4 text-left">Phone</th>
+                    <th className="p-4 text-left">Fees</th>
+                    <th className="p-4 text-left">Action</th>
                 </tr>
             </thead>
 
             <tbody>
-                {Array.isArray(students) && students.map(s => (
-                    <tr key={s._id}>
-                        <td>{s.name}</td>
-                        <td>{s.address}</td>
-                        <td>{s.dob?.slice(0, 10)}</td>
-                        <td>{s.phone}</td>
-                        <td>{s.feesPaid ? "Paid" : "Not Paid"}</td>
+                {students.map((s) => (
+                    <tr
+                        key={s._id}
+                        className="border-t hover:bg-gray-50 transition"
+                    >
+                        <td className="p-4 text-left">{s.name}</td>
+                        <td className="p-4 text-left">{s.address}</td>
+                        <td className="p-4 text-left">{s.dob?.slice(0, 10)}</td>
+                        <td className="p-4 text-left">{s.phone}</td>
+                        <td className="p-4 text-left">
+                            <span className={s.feesPaid ? "text-green-600" : "text-red-500"}>
+                                {s.feesPaid ? "Paid" : "Not Paid"}
+                            </span>
+                        </td>
 
-                        <td className="space-x-2 space-y-10">
-                            <button
-                                onClick={() => setEditStudent(s)}
-                                className="bg-yellow-400 px-2 rounded-xl text-white my-5 mx-10"
-                            >
+                        <td className="p-4 space-x-2">
+                            <button onClick={() => onEdit(s)} className="bg-yellow-400 hover:bg-yellow-500 px-3 py-1 rounded">
                                 Edit
                             </button>
 
-                            <button
-                                onClick={() => handleDelete(s._id)}
-                                className="bg-red-500 text-white px-2 rounded-xl"
-                            >
+                            <button onClick={() => handleDelete(s._id)} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
                                 Delete
                             </button>
                         </td>

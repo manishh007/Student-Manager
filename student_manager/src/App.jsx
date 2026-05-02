@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
-import StudentForm from "./components/StudentForm";
 import StudentTable from "./components/StudentTable";
+import StudentModal from "./components/StudentModal";
 
 function App() {
   const [students, setStudents] = useState([]);
+  const [showModal, setShowModal] = useState(false);
   const [editStudent, setEditStudent] = useState(null);
 
   const fetchStudents = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/api/students");
-      const data = await res.json();
-      setStudents(data);
-    } catch (err) {
-      console.error("Fetch error:", err);
-    }
+    const res = await fetch("http://localhost:5000/api/students");
+    const data = await res.json();
+    setStudents(data);
   };
 
   useEffect(() => {
@@ -21,19 +18,41 @@ function App() {
   }, []);
 
   return (
-    <div className="flex flex-col  min-h-screen">
-      <h1 className="text-2xl mb-4">Student Manager</h1>
+    <div className="p-6">
 
-      <StudentForm
-        fetchStudents={fetchStudents}
-        editStudent={editStudent}
-        setEditStudent={setEditStudent}
-      />
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Student Manager</h1>
+
+        <button
+          onClick={() => {
+            setEditStudent(null);
+            setShowModal(true);
+          }}
+          className="bg-blue-500 text-white px-4 py-2 rounded-2xl"
+        >
+          + Add Student
+        </button>
+      </div>
+
+      {/* TABLE */}
       <StudentTable
         students={students}
+        onEdit={(student) => {
+          setEditStudent(student);
+          setShowModal(true);
+        }}
         fetchStudents={fetchStudents}
-        setEditStudent={setEditStudent}
       />
+
+      {/* MODAL */}
+      {showModal && (
+        <StudentModal
+          closeModal={() => setShowModal(false)}
+          fetchStudents={fetchStudents}
+          editStudent={editStudent}
+        />
+      )}
     </div>
   );
 }
